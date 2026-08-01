@@ -1,0 +1,9 @@
+vendor/
+.buildpath
+.project
+.settings/
+composer.phar
+.vscode/
+storage/uploads/*
+!storage/uploads/.gitkeep
+worker.log
