@@ -17,7 +17,7 @@ class OrderController
         $this->getOrdersUseCase = $getOrdersUseCase;
     }
 
-    public function fetch(Request $request): Response
+    public function handle(Request $request): Response
     {
         $orderId = $request->queryParams['order_id'] ?? null;   
         $startDate = $request->queryParams['start_date'] ?? null;  

@@ -15,6 +15,7 @@ class OrderControllerTest extends TestCase
     private GetOrdersUseCase $getOrdersUseCaseMock;
     private OrderController $controller;
 
+
     protected function setUp(): void
     {
         $this->getOrdersUseCaseMock = $this->createMock(GetOrdersUseCase::class);
@@ -25,7 +26,7 @@ class OrderControllerTest extends TestCase
     {
         $request = new Request('GET', '/api/orders', [], [], []);
 
-        $response = $this->controller->fetch($request);
+        $response = $this->controller->handle($request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(400, $response->statusCode);
@@ -42,7 +43,7 @@ class OrderControllerTest extends TestCase
             'end_date' => '2023-01-31',
         ], [], []);
 
-        $response = $this->controller->fetch($request);
+        $response = $this->controller->handle($request);
 
         $this->assertEquals(400, $response->statusCode);
         $this->assertArrayHasKey('error', $response->payload);
@@ -55,7 +56,7 @@ class OrderControllerTest extends TestCase
             'end_date' => '2023-01-01',
         ], [], []);
 
-        $response = $this->controller->fetch($request);
+        $response = $this->controller->handle($request);
 
         $this->assertEquals(400, $response->statusCode);
     }
@@ -71,7 +72,7 @@ class OrderControllerTest extends TestCase
 
         $request = new Request('GET', '/api/orders', ['order_id' => '12345'], [], []);
 
-        $response = $this->controller->fetch($request);
+        $response = $this->controller->handle($request);
 
         $this->assertEquals(200, $response->statusCode);
         $this->assertEquals($expectedPayload, $response->payload['data']);
