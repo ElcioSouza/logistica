@@ -23,7 +23,6 @@ class RedisOrderRepositoryTest extends TestCase
     {
         $redis = $this->mockRedisClient();
 
-        // Nenhum usuário existente ainda no Redis
         $redis->method('mget')->willReturn([null]);
 
         $capturedUserJson = null;

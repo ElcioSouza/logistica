@@ -71,7 +71,7 @@ class UploadControllerTest extends TestCase
         $response = $this->controller->handle($request);
 
         $this->assertEquals(400, $response->statusCode);
-        $this->assertStringContainsString('apenas arquivos .txt', $response->payload['error']);
+        $this->assertStringContainsString('.txt', $response->payload['error']);
     }
 
     /**

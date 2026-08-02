@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\UseCases;
@@ -19,11 +18,11 @@ class UploadFileUseCase
     public function execute(string $tmpFilePath): array
     {
         if (!file_exists($tmpFilePath)) {
-            throw new InvalidArgumentException('O arquivo informado não existe.');
+            throw new InvalidArgumentException('The provided file does not exist.');
         }
 
         if (!is_dir($this->storageDirectory) && !mkdir($this->storageDirectory, 0775, true) && !is_dir($this->storageDirectory)) {
-            throw new RuntimeException('Não foi possível criar o diretório de armazenamento.');
+            throw new RuntimeException('Unable to create the storage directory.');
         }
 
         $storageDirectory = realpath($this->storageDirectory) ?: $this->storageDirectory;
@@ -38,7 +37,7 @@ class UploadFileUseCase
         }
 
         if (!$moved) {
-            throw new RuntimeException('Não foi possível mover o arquivo para o armazenamento persistente.');
+            throw new RuntimeException('Unable to move the file to persistent storage.');
         }
 
         $receivedAt = date('Y-m-d H:i:s');
@@ -48,10 +47,10 @@ class UploadFileUseCase
             eventType: 'file.uploaded',
             eventPayload: ['file_path' => $storedPath, 'received_at' => $receivedAt]
         );
-        
+
         return [
             'success' => true,
-            'message' => 'Arquivo recebido com sucesso e registrado para processamento assíncrono.',
+            'message' => 'File received successfully and registered for asynchronous processing.',
             'upload_id' => $uploadId,
         ];
     }

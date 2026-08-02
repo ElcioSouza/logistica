@@ -1,6 +1,4 @@
 <?php
-// INSTRUÇÃO: Lê o arquivo legado linha por linha usando streams nativos (fopen/fgets) dentro de um
-// Generator (yield), garantindo consumo de memória O(1) independente do tamanho do arquivo (até 2GB+).
 
 declare(strict_types=1);
 

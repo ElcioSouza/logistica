@@ -22,12 +22,12 @@ class UploadController
         $file = $request->files['file'] ?? null;
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            return new Response(['error' => 'Nenhum arquivo válido foi enviado na requisição.'], 400);
+            return new Response(['error' => 'No valid file was provided in the request.'], 400);
         }
         
         $originalName = $file['name'] ?? '';
         if (!str_ends_with(strtolower($originalName), '.txt')) {
-            return new Response(['error' => 'Formato inválido. O sistema aceita apenas arquivos .txt.'], 400);
+            return new Response(['error' => 'Invalid format. Only .txt files are accepted.'], 400);
         }
 
         try {
@@ -36,14 +36,14 @@ class UploadController
 
             return new Response([
                 'success' => true,
-                'message' => 'Arquivo recebido com sucesso e registrado para processamento assíncrono.',
+                'message' => 'File received successfully and registered for asynchronous processing.',
                 'upload_id' => $result['upload_id'],
             ], 202);
 
         } catch (InvalidArgumentException $e) {
             return new Response(['error' => $e->getMessage()], 400);
         } catch (Throwable $e) {
-            return new Response(['error' => 'Erro interno ao processar o arquivo.'], 500);
+            return new Response(['error' => 'Internal error while processing the file.'], 500);
         }
     }
 }
