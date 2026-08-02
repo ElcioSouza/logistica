@@ -9,3 +9,5 @@ storage/uploads/*
 !storage/uploads/.gitkeep
 worker.log
 *.sqlite
+storage/database.sqlite-shm
+storage/database.sqlite-wal

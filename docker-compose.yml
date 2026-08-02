@@ -1,0 +1,67 @@
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  volumes:
+    - .:/var/www
+    - vendor_data:/var/www/vendor
+  environment:
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    - RABBITMQ_HOST=rabbitmq
+    - RABBITMQ_PORT=5672
+    - RABBITMQ_USER=guest
+    - RABBITMQ_PASSWORD=guest
+  depends_on:
+    - redis
+    - rabbitmq
+
+services:
+  app:
+    <<: *app-base
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    command: php -S 0.0.0.0:8000 -t public
+
+  worker:
+    <<: *app-base
+    restart: unless-stopped
+    command: php bin/worker.php
+
+  outbox-relay:
+    <<: *app-base
+    restart: unless-stopped
+    command: php bin/outbox_relay.php
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics ping -q"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  vendor_data:

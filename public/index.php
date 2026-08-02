@@ -11,6 +11,9 @@ use App\Http\Router;
 use App\UseCases\GetOrdersUseCase;
 use App\Infrastructure\Persistence\RedisOrderRepository;
 use Predis\Client;
+use App\Infrastructure\Persistence\SqliteConnection;
+use App\Infrastructure\Persistence\SqliteOutboxRepository;
+use App\UseCases\UploadFileUseCase;
 
 $redis = new Client([
     'scheme' => 'tcp',
