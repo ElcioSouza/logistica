@@ -6,7 +6,7 @@ namespace App\UseCases;
 
 use App\Contracts\OrderRepositoryInterface;
 
-final class GetOrdersUseCase
+class GetOrdersUseCase
 {
     public function __construct(
         private readonly OrderRepositoryInterface $repository

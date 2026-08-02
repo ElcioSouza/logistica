@@ -90,7 +90,7 @@ class OrderControllerTest extends TestCase
             'end_date' => '2023-01-31',
         ], [], []);
 
-        $response = $this->controller->fetch($request);
+        $response = $this->controller->handle($request);
 
         $this->assertEquals(200, $response->statusCode);
         $this->assertArrayHasKey('data', $response->payload);
