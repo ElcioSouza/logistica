@@ -10,7 +10,7 @@ use App\Http\Router;
 $uploadController = new UploadController();
 
 $router = new Router();
-$router->register('POST', '/api/upload', $uploadController, 'handle'); // Upload do arquivo legado (.txt)
+$router->register('POST', '/api/upload', $uploadController, 'handle');
 
 $request = Request::createFromGlobals();
 
@@ -20,5 +20,5 @@ try {
 } catch (\Throwable $e) {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Erro interno do servidor']);
+    echo json_encode(['error' => 'Internal server error']);
 }

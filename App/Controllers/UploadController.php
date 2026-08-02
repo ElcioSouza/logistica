@@ -20,7 +20,7 @@ class UploadController
 
        return new Response([
                 'success' => true,
-                'message' => 'Arquivo recebido com sucesso e registrado para processamento assíncrono.',
+                'message' => 'File received successfully and registered for asynchronous processing.',
                 'upload_id' => 2,
             ], 202);
     }
