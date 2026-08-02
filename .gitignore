@@ -5,3 +5,7 @@ vendor/
 composer.phar
 .vscode/
 .env
+storage/uploads/*
+!storage/uploads/.gitkeep
+worker.log
+*.sqlite
