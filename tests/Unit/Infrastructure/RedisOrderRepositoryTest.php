@@ -99,7 +99,7 @@ class RedisOrderRepositoryTest extends TestCase
 
         $repository = new RedisOrderRepository($redis);
 
-        $expected = ['data' => [], 'meta' => ['page' => 1, 'per_page' => 50, 'total' => 0, 'total_pages' => 0]];
-        $this->assertSame($expected, $repository->findByDateRange('2021-01-01', '2021-01-31', 1, 50));
+        $expected = ['data' => [], 'meta' => ['page' => 1, 'per_page' => 25, 'total' => 0, 'total_pages' => 0]];
+        $this->assertSame($expected, $repository->findByDateRange('2021-01-01', '2021-01-31', 1, 25));
     }
 }

@@ -67,7 +67,7 @@ class OrderControllerTest extends TestCase
 
         $this->getOrdersUseCaseMock->expects($this->once())
             ->method('execute')
-            ->with('12345', null, null, 1, 50)
+            ->with('12345', null, null, 1, 25)
             ->willReturn($expectedPayload);
 
         $request = new Request('GET', '/api/orders', ['order_id' => '12345'], [], []);
@@ -82,8 +82,8 @@ class OrderControllerTest extends TestCase
     {
         $this->getOrdersUseCaseMock->expects($this->once())
             ->method('execute')
-            ->with(null, '2023-01-01', '2023-01-31', 1, 50)
-            ->willReturn(['data' => [], 'meta' => ['page' => 1, 'per_page' => 50, 'total' => 0, 'total_pages' => 0]]);
+            ->with(null, '2023-01-01', '2023-01-31', 1, 25)
+            ->willReturn(['data' => [], 'meta' => ['page' => 1, 'per_page' => 25, 'total' => 0, 'total_pages' => 0]]);
 
         $request = new Request('GET', '/api/orders', [
             'start_date' => '2023-01-01',
@@ -96,7 +96,7 @@ class OrderControllerTest extends TestCase
         $this->assertEquals([], $response->payload);
         $this->assertArrayHasKey('X-Page', $response->headers);
         $this->assertEquals('1', $response->headers['X-Page']);
-        $this->assertEquals('50', $response->headers['X-Per-Page']);
+        $this->assertEquals('25', $response->headers['X-Per-Page']);
         $this->assertEquals('0', $response->headers['X-Total']);
         $this->assertEquals('0', $response->headers['X-Total-Pages']);
     }

@@ -31,8 +31,8 @@ class OrderController
         $endDate = $normalized['end_date'] ?? null;
 
         $page = max(1, (int) ($normalized['page'] ?? 1));
-        $perPage = (int) ($normalized['per_page'] ?? 50);
-        $perPage = min(500, max(1, $perPage));
+        $perPage = (int) ($normalized['per_page'] ?? 25);
+        $perPage = min(100, max(1, $perPage));
 
   
         if ($startDate && !$endDate) {

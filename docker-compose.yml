@@ -23,17 +23,17 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: php -d memory_limit=1024M -S 0.0.0.0:8000 -t public
+    command: php -d memory_limit=2048M -S 0.0.0.0:8000 -t public
 
   worker:
     <<: *app-base
     restart: unless-stopped
-    command: php -d memory_limit=1024M bin/worker.php
+    command: php -d memory_limit=2048M bin/worker.php
 
   outbox-relay:
     <<: *app-base
     restart: unless-stopped
-    command: php -d memory_limit=1024M bin/outbox_relay.php
+    command: php -d memory_limit=2048M bin/outbox_relay.php
 
   rabbitmq:
     image: rabbitmq:3-management-alpine

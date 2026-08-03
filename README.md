@@ -163,11 +163,11 @@ GET http://localhost:8000/api/orders?start_date=2021-12-01&end_date=2021-12-31
 
 Para evitar respostas muito grandes, a API suporta paginação nos endpoints que retornam listas.
 
-- Parâmetros: `page` (inteiro, padrão `1`) e `per_page` (inteiro, padrão `50`, máximo `500`).
+- Parâmetros: `page` (inteiro, padrão `1`) e `per_page` (inteiro, padrão `25`, máximo `100`).
 - Exemplo de requisição:
 
 ```bash
-GET http://localhost:8000/api/orders?start_date=2021-03-01&end_date=2021-03-31&page=2&per_page=50
+GET http://localhost:8000/api/orders?start_date=2021-03-01&end_date=2021-03-31&page=2&per_page=25
 ```
 
 Comportamento da resposta:
@@ -185,7 +185,7 @@ curl -i -sS -G 'http://localhost:8000/api/orders' \
    --data-urlencode 'start_date=2021-03-01' \
    --data-urlencode 'end_date=2021-03-31' \
    --data-urlencode 'page=2' \
-   --data-urlencode 'per_page=50'
+   --data-urlencode 'per_page=25'
 ```
 
 Resposta (exemplo):
