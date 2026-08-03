@@ -15,7 +15,7 @@ class RedisOrderRepositoryTest extends TestCase
     {
         return $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->addMethods(['mget', 'get', 'set', 'zadd', 'zrangebyscore'])
+            ->addMethods(['mget', 'get', 'set', 'zadd', 'zrangebyscore', 'zcount'])
             ->getMock();
     }
 
@@ -95,9 +95,11 @@ class RedisOrderRepositoryTest extends TestCase
     {
         $redis = $this->mockRedisClient();
         $redis->method('zrangebyscore')->willReturn([]);
+        $redis->method('zcount')->willReturn(0);
 
         $repository = new RedisOrderRepository($redis);
 
-        $this->assertSame([], $repository->findByDateRange('2021-01-01', '2021-01-31'));
+        $expected = ['data' => [], 'meta' => ['page' => 1, 'per_page' => 50, 'total' => 0, 'total_pages' => 0]];
+        $this->assertSame($expected, $repository->findByDateRange('2021-01-01', '2021-01-31', 1, 50));
     }
 }

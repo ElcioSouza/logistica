@@ -147,8 +147,8 @@ GET http://localhost:8000/api/orders?start_date=2021-12-01&end_date=2021-12-31
       "orders": [
          {
             "order_id": 123,
+             "total": 1024.48,
             "date": "2021-12-01",
-            "total": 1024.48,
             "products": [
                { "product_id": 111, "value": 512.24 },
                { "product_id": 122, "value": 512.24 }
@@ -158,6 +158,59 @@ GET http://localhost:8000/api/orders?start_date=2021-12-01&end_date=2021-12-31
    }
 ]
 ```
+
+### Paginação (intervalos grandes)
+
+Para evitar respostas muito grandes, a API suporta paginação nos endpoints que retornam listas.
+
+- Parâmetros: `page` (inteiro, padrão `1`) e `per_page` (inteiro, padrão `50`, máximo `500`).
+- Exemplo de requisição:
+
+```bash
+GET http://localhost:8000/api/orders?start_date=2021-03-01&end_date=2021-03-31&page=2&per_page=50
+```
+
+Comportamento da resposta:
+- **Corpo (body):** um array JSON contendo os usuários/pedidos da página (sem wrapper `data`).
+- **Cabeçalhos (headers):** metadados de paginação são expostos via cabeçalhos HTTP:
+   - `X-Page`: número da página atual
+   - `X-Per-Page`: itens por página
+   - `X-Total`: total de pedidos que casam com o filtro
+   - `X-Total-Pages`: total de páginas
+
+Exemplo com `curl` (mostrando cabeçalhos):
+
+```bash
+curl -i -sS -G 'http://localhost:8000/api/orders' \
+   --data-urlencode 'start_date=2021-03-01' \
+   --data-urlencode 'end_date=2021-03-31' \
+   --data-urlencode 'page=2' \
+   --data-urlencode 'per_page=50'
+```
+
+Resposta (exemplo):
+
+HTTP/1.1 200 OK
+X-Page: 2
+X-Per-Page: 50
+X-Total: 1234
+X-Total-Pages: 25
+Content-Type: application/json; charset=utf-8
+
+[
+   {
+      "user_id": 78,
+      "name": "Wade Mraz",
+      "orders": [ ... ]
+   },
+   {
+      "user_id": 79,
+      "name": "Another User",
+      "orders": [ ... ]
+   }
+]
+
+Use `page` e `per_page` para navegar pelos resultados sem causar uso excessivo de memória.
 
 ---
 

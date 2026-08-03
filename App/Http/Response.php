@@ -8,13 +8,17 @@ class Response
 {
     public function __construct(
         public readonly array $payload,
-        public readonly int $statusCode = 200
+        public readonly int $statusCode = 200,
+        public readonly array $headers = []
     ) {}
-    
+
     public function sendJson(): void
     {
         http_response_code($this->statusCode);
         header('Content-Type: application/json; charset=utf-8');
+        foreach ($this->headers as $name => $value) {
+            header(sprintf('%s: %s', $name, $value));
+        }
         echo json_encode($this->payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

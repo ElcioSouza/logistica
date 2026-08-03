@@ -129,7 +129,7 @@ class UploadControllerTest extends TestCase
             files: [
                 'file' => [
                     'name' => 'pedidos.txt',
-                    'type' => 'application/octet-stream', // Content-Type genérico — não deve ser motivo de rejeição
+                    'type' => 'application/octet-stream',
                     'tmp_name' => '/tmp/php_fake',
                     'error' => UPLOAD_ERR_OK,
                     'size' => 1024,

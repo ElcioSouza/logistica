@@ -19,9 +19,25 @@ class OrderController
 
     public function handle(Request $request): Response
     {
-        $orderId = $request->queryParams['order_id'] ?? null;   
-        $startDate = $request->queryParams['start_date'] ?? null;  
-        $endDate = $request->queryParams['end_date'] ?? null;      
+        
+        $normalized = [];
+        foreach ($request->queryParams as $k => $v) {
+            $key = strtolower(trim(str_replace(' ', '_', (string) $k)));
+            $normalized[$key] = is_string($v) ? trim($v) : $v;
+        }
+
+        $orderId = $normalized['order_id'] ?? null;
+        $startDate = $normalized['start_date'] ?? null;
+        $endDate = $normalized['end_date'] ?? null;
+
+        $page = max(1, (int) ($normalized['page'] ?? 1));
+        $perPage = (int) ($normalized['per_page'] ?? 50);
+        $perPage = min(500, max(1, $perPage));
+
+  
+        if ($startDate && !$endDate) {
+            $endDate = $startDate;
+        }
 
         if (!$orderId && (!$startDate || !$endDate)) {
             return new Response([
@@ -40,7 +56,19 @@ class OrderController
             return new Response(['error' => 'start_date cannot be later than end_date.'], 400);
         }
 
-        $payload = $this->getOrdersUseCase->execute($orderId, $startDate, $endDate);
+        $payload = $this->getOrdersUseCase->execute($orderId, $startDate, $endDate, $page, $perPage);
+
+        if (isset($payload['data']) && isset($payload['meta'])) {
+            $meta = $payload['meta'];
+            $headers = [
+                'X-Page' => (string) $meta['page'],
+                'X-Per-Page' => (string) $meta['per_page'],
+                'X-Total' => (string) $meta['total'],
+                'X-Total-Pages' => (string) $meta['total_pages'],
+            ];
+
+            return new Response($payload['data'], 200, $headers);
+        }
 
         return new Response($payload, 200);
     }

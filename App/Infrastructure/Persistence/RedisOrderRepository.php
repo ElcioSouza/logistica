@@ -89,14 +89,25 @@ final class RedisOrderRepository implements OrderRepositoryInterface
         return $this->buildUserPayload($user, [$orderId]);
     }
 
-    public function findByDateRange(string $startDate, string $endDate): array
+    public function findByDateRange(string $startDate, string $endDate, int $page, int $perPage): array
     {
         $minScore = (int) str_replace('-', '', $startDate);
         $maxScore = (int) str_replace('-', '', $endDate);
+        $total = (int) $this->redis->zcount(self::DATE_INDEX_KEY, $minScore, $maxScore);
 
-        $orderIds = $this->redis->zrangebyscore(self::DATE_INDEX_KEY, $minScore, $maxScore);
+        $offset = ($page - 1) * $perPage;
+
+        $orderIds = $this->redis->zrangebyscore(self::DATE_INDEX_KEY, $minScore, $maxScore, ['limit' => [$offset, $perPage]]);
         if (empty($orderIds)) {
-            return [];
+            return [
+                'data' => [],
+                'meta' => [
+                    'page' => $page,
+                    'per_page' => $perPage,
+                    'total' => $total,
+                    'total_pages' => $total > 0 ? (int) ceil($total / $perPage) : 0,
+                ],
+            ];
         }
 
         $indexKeys = array_map(fn (string $orderId): string => $this->orderIndexKey($orderId), $orderIds);
@@ -111,7 +122,15 @@ final class RedisOrderRepository implements OrderRepositoryInterface
         }
 
         if (empty($orderIdsByUser)) {
-            return [];
+            return [
+                'data' => [],
+                'meta' => [
+                    'page' => $page,
+                    'per_page' => $perPage,
+                    'total' => $total,
+                    'total_pages' => $total > 0 ? (int) ceil($total / $perPage) : 0,
+                ],
+            ];
         }
 
         $userIds = array_keys($orderIdsByUser);
@@ -119,17 +138,24 @@ final class RedisOrderRepository implements OrderRepositoryInterface
         $userPayloads = $this->redis->mget($userKeys);
 
         $result = [];
-        foreach ($userIds as $index => $userId) {
-            $userJson = $userPayloads[$index] ?? null;
+        foreach ($userIds as $i => $userId) {
+            $userJson = $userPayloads[$i] ?? null;
             if (!$userJson) {
                 continue;
             }
-
             $user = json_decode($userJson, true);
             $result[] = $this->buildUserPayload($user, $orderIdsByUser[$userId]);
         }
 
-        return $result;
+        return [
+            'data' => $result,
+            'meta' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $total > 0 ? (int) ceil($total / $perPage) : 0,
+            ],
+        ];
     }
 
     private function buildUserPayload(array $user, array $onlyOrderIds): array
@@ -147,13 +173,13 @@ final class RedisOrderRepository implements OrderRepositoryInterface
             foreach ($products as $p) {
                 $normalizedProducts[] = [
                     'product_id' => (int) $p['product_id'],
-                    'value' => number_format((float) $p['value'], 2, '.', ''),
+                    'value' => (float) $p['value'],
                 ];
             }
 
             $orders[] = [
-                'order id' => (int) $order['order_id'],
-                'total' => number_format((float) $order['total'], 2, '.', ''),
+                'order_id' => (int) $order['order_id'],
+                'total' => (float) $order['total'],
                 'date' => $order['date'],
                 'products' => $normalizedProducts,
             ];

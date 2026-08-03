@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: php -S 0.0.0.0:8000 -t public
+    command: php -d memory_limit=1024M -S 0.0.0.0:8000 -t public
 
   worker:
     <<: *app-base

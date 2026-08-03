@@ -14,7 +14,7 @@ final class RabbitMQTopology
 
     public const RETRY_EXCHANGE = 'logistics.retry';
     public const RETRY_QUEUE = 'q.uploads.retry';
-    public const RETRY_TTL_MS = 10000; // 10 segundos antes de tentar novamente
+    public const RETRY_TTL_MS = 10000;
 
     public const DLX_EXCHANGE = 'logistics.dlx';
     public const DLQ_QUEUE = 'q.uploads.dlq';
