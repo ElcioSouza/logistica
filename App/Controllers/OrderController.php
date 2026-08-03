@@ -42,8 +42,6 @@ class OrderController
 
         $payload = $this->getOrdersUseCase->execute($orderId, $startDate, $endDate);
 
-        return new Response([
-            'data' => $payload
-        ], 200);
+        return new Response($payload, 200);
     }
 }

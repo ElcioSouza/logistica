@@ -29,7 +29,6 @@ final class SqliteConnection
         try {
             $pdo = new PDO('sqlite:' . $databasePath);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            // WAL melhora concorrência leitura/escrita entre os processos que compartilham o arquivo.
             $pdo->exec('PRAGMA journal_mode = WAL;');
             $pdo->exec('PRAGMA foreign_keys = ON;');
 

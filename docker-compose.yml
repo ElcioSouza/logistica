@@ -5,6 +5,7 @@ x-app-base: &app-base
   volumes:
     - .:/var/www
     - vendor_data:/var/www/vendor
+    - ./config/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
   environment:
     - REDIS_HOST=redis
     - REDIS_PORT=6379
@@ -27,12 +28,12 @@ services:
   worker:
     <<: *app-base
     restart: unless-stopped
-    command: php bin/worker.php
+    command: php -d memory_limit=1024M bin/worker.php
 
   outbox-relay:
     <<: *app-base
     restart: unless-stopped
-    command: php bin/outbox_relay.php
+    command: php -d memory_limit=1024M bin/outbox_relay.php
 
   rabbitmq:
     image: rabbitmq:3-management-alpine

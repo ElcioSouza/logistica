@@ -140,25 +140,23 @@ GET http://localhost:8000/api/orders?start_date=2021-12-01&end_date=2021-12-31
 
 **Resposta (200 OK):**
 ```json
-{
-  "data": [
-    {
+[
+   {
       "user_id": 1,
       "name": "Zarelli",
       "orders": [
-        {
-          "order_id": 123,
-          "date": "2021-12-01",
-          "total": 1024.48,
-          "products": [
-            { "product_id": 111, "value": 512.24 },
-            { "product_id": 122, "value": 512.24 }
-          ]
-        }
+         {
+            "order_id": 123,
+            "date": "2021-12-01",
+            "total": 1024.48,
+            "products": [
+               { "product_id": 111, "value": 512.24 },
+               { "product_id": 122, "value": 512.24 }
+            ]
+         }
       ]
-    }
-  ]
-}
+   }
+]
 ```
 
 ---

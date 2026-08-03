@@ -1,6 +1,5 @@
 <?php
-// INSTRUÇÃO: Contrato de persistência para pedidos. Permite trocar Redis por outro banco
-// (ex: MongoDB, DynamoDB) sem alterar as regras de negócio (UseCases).
+ 
 
 declare(strict_types=1);
 

@@ -141,8 +141,22 @@ final class RedisOrderRepository implements OrderRepositoryInterface
             }
 
             $order = $user['orders'][$orderId];
-            $order['products'] = array_values($order['products']);
-            $orders[] = $order;
+            $products = array_values($order['products']);
+
+            $normalizedProducts = [];
+            foreach ($products as $p) {
+                $normalizedProducts[] = [
+                    'product_id' => (int) $p['product_id'],
+                    'value' => number_format((float) $p['value'], 2, '.', ''),
+                ];
+            }
+
+            $orders[] = [
+                'order id' => (int) $order['order_id'],
+                'total' => number_format((float) $order['total'], 2, '.', ''),
+                'date' => $order['date'],
+                'products' => $normalizedProducts,
+            ];
         }
 
         return [

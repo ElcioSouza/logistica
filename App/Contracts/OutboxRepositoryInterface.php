@@ -1,6 +1,5 @@
 <?php
-// INSTRUÇÃO: Contrato do repositório Outbox — grava o registro de upload e o evento pendente
-// na mesma transação local, e permite ao relay consultar/marcar eventos publicados.
+ 
 
 declare(strict_types=1);
 
