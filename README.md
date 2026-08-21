@@ -1,9 +1,11 @@
 # Sistema de Integração Logística (ETL Assíncrono)
 
-Uma API REST com arquitetura distribuída, desenvolvida para atuar como um processo ETL
+API REST com arquitetura distribuída, desenvolvida para atuar como um processo ETL
 (Extract, Transform, Load). O sistema processa arquivos posicionais de alta volumetria (2GB+)
 via streaming, distribui o processamento com mensageria e retorna os dados estruturados e
 normalizados em JSON.
+
+![Diagrama de Arquitetura](desenho.jpg)
 
 ## Tecnologias e Padrões
 
@@ -26,7 +28,7 @@ juntos, sem necessidade de instalações manuais na máquina host.
 
 1. Clone o repositório e acesse a pasta:
    ```bash
-   git clone <seu-repositorio> && cd <nome-da-pasta>
+   git clone https://github.com/ElcioSouza/logistica.git && cd logistica
    ```
 
 2. Crie o arquivo `.env` a partir do exemplo:
@@ -40,6 +42,8 @@ juntos, sem necessidade de instalações manuais na máquina host.
    ```
 
 4. A API estará disponível em: `http://localhost:8000`
+
+> **Dica:** O painel de gerenciamento do RabbitMQ fica acessível em `http://localhost:15672` (usuário/senha: `guest`/`guest`).
 
 ---
 
@@ -62,7 +66,7 @@ Funciona sem Docker, mas é necessário instalar os serviços manualmente.
 
 1. Clone o repositório:
    ```bash
-   git clone <seu-repositorio> && cd <nome-da-pasta>
+   git clone https://github.com/ElcioSouza/logistica.git && cd logistica
    ```
 
 2. Instale as dependências PHP:
@@ -79,6 +83,7 @@ Funciona sem Docker, mas é necessário instalar os serviços manualmente.
    ```env
    REDIS_HOST=127.0.0.1
    REDIS_PORT=6379
+   REDIS_PASSWORD=
    RABBITMQ_HOST=127.0.0.1
    RABBITMQ_PORT=5672
    RABBITMQ_USER=guest
@@ -190,13 +195,16 @@ curl -i -sS -G 'http://localhost:8000/api/orders' \
 
 Resposta (exemplo):
 
+```http
 HTTP/1.1 200 OK
 X-Page: 2
-X-Per-Page: 50
+X-Per-Page: 25
 X-Total: 1234
-X-Total-Pages: 25
+X-Total-Pages: 50
 Content-Type: application/json; charset=utf-8
+```
 
+```json
 [
    {
       "user_id": 78,
@@ -209,6 +217,7 @@ Content-Type: application/json; charset=utf-8
       "orders": [ ... ]
    }
 ]
+```
 
 Use `page` e `per_page` para navegar pelos resultados sem causar uso excessivo de memória.
 
@@ -249,7 +258,7 @@ Baixe em: https://insomnia.rest/download
 
 ---
 
-## Como Funciona
+## Arquitetura do Projeto
 
 ```
 Upload API → SQLite (Outbox) → outbox-relay → RabbitMQ → worker → Redis
@@ -261,6 +270,35 @@ Upload API → SQLite (Outbox) → outbox-relay → RabbitMQ → worker → Redi
 3. **worker** → consome a fila, processa o arquivo em **streaming** (memória O(1)) e grava o
    resultado agregado no **Redis**.
 4. Falha transitória? → **retry automático** (TTL 10s). Esgotou 3 tentativas? → **DLQ**.
+
+---
+
+## Estrutura de Diretórios
+
+```
+├── App/
+│   ├── Contracts/          # Interfaces (Repository, MessageBroker)
+│   ├── Controllers/        # UploadController, OrderController
+│   ├── Http/               # Camada HTTP (Request/Response)
+│   ├── Infrastructure/     # Implementações concretas
+│   │   ├── Messaging/      # RabbitMQ adapter
+│   │   └── Persistence/    # Redis e SQLite adapters
+│   ├── Parsing/            # Parser de arquivos posicionais
+│   └── UseCases/           # Regras de negócio (Upload, Process, GetOrders)
+├── bin/
+│   ├── worker.php          # Consumer RabbitMQ
+│   └── outbox_relay.php    # Producer (Outbox → RabbitMQ)
+├── config/                 # Configurações (php.ini overrides)
+├── public/
+│   └── index.php           # Front controller / Router
+├── storage/                # Uploads e banco SQLite
+├── tests/
+│   ├── Unit/               # Testes unitários
+│   └── Integration/        # Testes de integração
+├── docker-compose.yml
+├── Dockerfile
+└── composer.json
+```
 
 ---
 
@@ -281,3 +319,9 @@ composer test
 ```bash
 composer test -- --testdox
 ```
+
+---
+
+## Licença
+
+Este projeto é distribuído para fins de avaliação técnica.
